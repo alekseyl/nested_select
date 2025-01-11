@@ -1,7 +1,7 @@
 # Nested select
-nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU-time.
-Real numbers you can only measure on your real cases. I did a couple manual comparison on real requests data, 
-got ~ two time less RAM and 20-30% less time spent during load phase. 
+nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
+As for the real numbers: I did a couple manual comparison on real requests data, got ~ two time less RAM and 20-30% less time spent during load phase. 
+It's not a silver bullet, but it might worth a shot against your bottleneck requests if any. 
 
 # A little bit of nested_select history
 Awhile ago I investigated the potential performance boost from partial instantiation 
