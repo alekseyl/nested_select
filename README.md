@@ -1,3 +1,49 @@
+# Nested select
+nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU-time.
+Real numbers you can only measure on your real cases. I did a couple manual comparison on real requests data, 
+got ~ two time less RAM and 20-30% less time spent during load phase. 
+
+# A little bit of nested_select history
+Awhile ago I investigated the potential performance boost from partial instantiation 
+of database records in rails applications: [Rails nitro-fast collection rendering with PostgreSQL](https://medium.com/@leshchuk/rails-nitro-fast-collection-rendering-with-postgresql-a5fb07cc215f)
+
+To be short among the others I've tested the idea of Partial instantiation:
+
+> Sometimes different actions needs different set of columns per ORM object. You can speedup instantiation 
+> by creating sets of attributes specific for particular request. 
+> It can be done through the scopes and scoped relations inside your model.
+
+**Pluses**
+> It may be faster. How fast? Highly depends on data structure and ratio of used columns. I started from instantinating 75% of object columns and go to 1 or 2 columns being instantiated. 
+> In terms of instantiation results are: 1.3–4.2 times faster on simple type columns ( text, string, int, bool etc.), and 1.2–10 times faster when you exclude json/jsonb/store instantiation. 
+> Also all this numbers received without any instantiation callbacks like after_find.
+
+
+Also during my investigations I've kinda missed the other aspect of the problem: RAM, DB IOps, network throughput.
+Requesting less columns improves¹ all that things. 
+
+But that's a pretty obvious. There are lot of articles covering this problem an idea of partial selection:
+
+ActiveRecord select :id column over 1000 records in a different way:
+https://samsaffron.com/archive/2018/06/01/an-analysis-of-memory-bloat-in-active-record-5-2
+
+Just another simple and newbie technics on boosting ActiveRecord ( including partial selection ):
+https://medium.com/@snapsheetclaims/11-ways-to-boost-your-activerecord-query-performance-32b9986f093f
+
+Just partial selection article: 
+https://pawelurbanek.com/activerecord-memory-usage
+
+And others.
+
+But the real problem is: **in rails you can't do any selection on preloading models** (until nested_select of course )) ).
+Ths means that all that tree of preloaded object goes with ```SELECT table_name.*``` query.
+
+Technically speaking you may solve this problem by defining custom scopes and defining custom tailored relation with scopes. 
+But that's a lot of a boilerplate code, creating scopes and nested relations for all kinds of requests looks like unreal solution, 
+no one will do such madness.
+
+[1] I have much less idea on how other than PotsgreSQL DB-engines are working with disk in terms of partial tuples/records reading. 
+Postgres itself will read a whole page from a disk to retrieve the record, but then lesser columns could switch retrieval to an Index-Only scan decreasing IOps significantly
 
 
 ## Nested Select patch

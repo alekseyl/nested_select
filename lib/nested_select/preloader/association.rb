@@ -9,7 +9,10 @@ module NestedSelect
       end
 
       def apply_nested_select_values( partial_select_values )
-        @nested_select_values = [*partial_select_values, reflection.foreign_key].uniq
+        foreign_key = reflection.foreign_key if !reflection.is_a?(ActiveRecord::Reflection::BelongsToReflection) &&
+          !reflection.is_a?(ActiveRecord::Reflection::ThroughReflection)
+
+        @nested_select_values = [*partial_select_values,*foreign_key].uniq
       end
     end
   end
