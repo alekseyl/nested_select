@@ -1,7 +1,11 @@
-# Nested select
+# Nested select -- 10 times faster and 50 times less RAM on preloading relations with heavy columns!  
 nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
-As for the real numbers: I did a couple manual comparison on real requests data, got ~ two time less RAM and 20-30% less time spent during load phase. 
-It's not a silver bullet, but it might worth a shot against your bottleneck requests if any. 
+Here is a benchmark screens for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulated real-life example
+One course, a real prod set of data used by current UI (~ x50 times less RAM):
+![img.png](img.png)
+
+Synthetic example on the real prod data, but the bigger than needed collection (~ x10 faster):
+![img_2.png](img_2.png)
 
 # A little bit of nested_select history
 Awhile ago I investigated the potential performance boost from partial instantiation 
