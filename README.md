@@ -1,11 +1,52 @@
 # Nested select -- 10 times faster and 50 times less RAM on preloading relations with heavy columns!  
 nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
 Here is a benchmark screens for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulated real-life example
-One course, a real prod set of data used by current UI (~ x50 times less RAM):
-![img.png](img.png)
 
-Synthetic example on the real prod data, but the bigger than needed collection (~ x10 faster):
-![img_2.png](img_2.png)
+One course, a real prod set of data used by current UI (~ x50 times less RAM):
+
+```
+irb(main):472:0> compare_nested_select(ids, 1)
+
+------- CPU comparison, for root_collection_size: 1 ----
+       user     system      total        real
+nested_select  0.059841   0.007738   0.067579 (  0.428898)
+simple includes  0.101701   0.028928   0.130629 (  0.578862)
+
+----------------- Memory comparison, for root_collection_size: 1 ---------
+------ Nested Select memory consumption for root_collection_size: 1 ------
+Total allocated: 48.83 kB (596 objects)
+Total retained:  15.46 kB (131 objects)
+------ Full preloading memory consumption for root_collection_size: 1 ----
+Total allocated: 781.81 kB (719 objects)
+Total retained:  741.52 kB (238 objects)
+
+RAM ratio improvements x47.951500258665284 on retain objects
+RAM ratio improvements x16.011427869255346 on total_allocated objects
+```
+
+60 courses, synthetic example (there is no UI for multiple course with structure display) 
+on the real prod data, but the bigger than needed collection (~ x10 faster):
+
+```
+irb(main):476:0> compare_nested_select(ids, 60)
+
+------- CPU comparison, for root_collection_size: 60 ----
+       user     system      total        real
+nested_select  0.381138   0.017080   0.398218 (  0.959473)
+simple includes  2.882798   0.976814   3.859612 (  9.048997)
+
+----------------- Memory comparison, for root_collection_size: 60 ---------
+------ Nested Select memory consumption for root_collection_size: 60 ------
+Total allocated: 1.07 MB (11051 objects)
+Total retained:  672.15 kB (5614 objects)
+------ Full preloading memory consumption for root_collection_size: 60 ----
+Total allocated: 20.39 MB (16242 objects)
+Total retained:  19.61 MB (10272 objects)
+
+RAM ratio improvements x29.17856080172342 on retain objects
+RAM ratio improvements x19.11061115673195 on total_allocated objects
+```
+
 
 # A little bit of nested_select history
 Awhile ago I investigated the potential performance boost from partial instantiation 
