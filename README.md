@@ -1,50 +1,59 @@
-# Nested select -- 10 times faster and 50 times less RAM on preloading relations with heavy columns!  
+# Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!  
 nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
-Here is a benchmark screens for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulated real-life example
+Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulated real-life example
 
-One course, a real prod set of data used by current UI (~ x50 times less RAM):
+Single course, a real prod set of data used by current UI (~ x33 times less RAM):
 
 ```
-irb(main):472:0> compare_nested_select(ids, 1)
+irb(main):216:0>compare_nested_select(ids, 1, silence_ar_logger_for_memory_profiling: false)
 
-------- CPU comparison, for root_collection_size: 1 ----
-       user     system      total        real
-nested_select  0.059841   0.007738   0.067579 (  0.428898)
-simple includes  0.101701   0.028928   0.130629 (  0.578862)
+------- CPU comparison, for root_collection_size: 1 ----                                                           
+       user     system      total        real                                                                      
+nested_select  0.096008   0.002876   0.098884 (  0.466985)                                                         
+simple includes  0.209188   0.058340   0.267528 (  0.903893)                                                       
+                                                                                                                   
+----------------- Memory comparison, for root_collection_size: 1 ---------                                         
 
------------------ Memory comparison, for root_collection_size: 1 ---------
------- Nested Select memory consumption for root_collection_size: 1 ------
-Total allocated: 48.83 kB (596 objects)
-Total retained:  15.46 kB (131 objects)
+D, [2025-01-12T19:08:36.163282 #503] DEBUG -- :   Topic Load (4.1ms)  SELECT "topics"."id", "topics"."position", "topics"."title", "topics"."course_id" FROM "topics" WHERE "topics"."deleted_at" IS NULL AND "topics"."course_id" = $1  [["course_id", 1624]]                                                                 
+D, [2025-01-12T19:08:36.168803 #503] DEBUG -- :   Lesson Load (3.9ms)  SELECT "lessons"."id", "lessons"."title", "lessons"."topic_id", "lessons"."position", "lessons"."topic_id" FROM "lessons" WHERE "lessons"."deleted_at" IS NULL AND "lessons"."topic_id" = $1  [["topic_id", 7297]]                                      
+D, [2025-01-12T19:08:37.220379 #503] DEBUG -- :   Topic Load (4.2ms)  SELECT "topics"."id", "topics"."position", "topics"."title", "topics"."course_id" FROM "topics" WHERE "topics"."deleted_at" IS NULL AND "topics"."course_id" = $1  [["course_id", 1624]]                                                                 
+D, [2025-01-12T19:08:37.247484 #503] DEBUG -- :   Lesson Load (25.7ms)  SELECT "lessons".* FROM "lessons" WHERE "lessons"."deleted_at" IS NULL AND "lessons"."topic_id" = $1  [["topic_id", 7297]]
+
+------ Nested Select memory consumption for root_collection_size: 1 ------                                         
+Total allocated: 80.84 kB (972 objects)
+Total retained:  34.67 kB (288 objects)
+
 ------ Full preloading memory consumption for root_collection_size: 1 ----
-Total allocated: 781.81 kB (719 objects)
-Total retained:  741.52 kB (238 objects)
-
-RAM ratio improvements x47.951500258665284 on retain objects
-RAM ratio improvements x16.011427869255346 on total_allocated objects
+Total allocated: 1.21 MB (1105 objects)
+Total retained:  1.16 MB (432 objects)
+RAM ratio improvements x33.54678126442086 on retain objects
+RAM ratio improvements x15.002820281285949 on total_allocated objects
 ```
 
-60 courses, synthetic example (there is no UI for multiple course with structure display) 
-on the real prod data, but the bigger than needed collection (~ x10 faster):
+100 courses, synthetic example (there is no UI for multiple course with structure display) 
+on the real prod data, but the bigger than needed collection ( x7 faster):
 
 ```
-irb(main):476:0> compare_nested_select(ids, 60)
+irb(main):280:0> compare_nested_select(ids, 100)
 
-------- CPU comparison, for root_collection_size: 60 ----
-       user     system      total        real
-nested_select  0.381138   0.017080   0.398218 (  0.959473)
-simple includes  2.882798   0.976814   3.859612 (  9.048997)
+------- CPU comparison, for root_collection_size: 100 ----
+       user     system      total        real           
+nested_select  1.571095   0.021778   1.592873 (  2.263369)
+simple includes  5.374909   1.704284   7.079193 ( 15.488579)
+                                                        
+----------------- Memory comparison, for root_collection_size: 100 ---------
+------ Nested Select memory consumption for root_collection_size: 100 ------
 
------------------ Memory comparison, for root_collection_size: 60 ---------
------- Nested Select memory consumption for root_collection_size: 60 ------
-Total allocated: 1.07 MB (11051 objects)
-Total retained:  672.15 kB (5614 objects)
------- Full preloading memory consumption for root_collection_size: 60 ----
-Total allocated: 20.39 MB (16242 objects)
-Total retained:  19.61 MB (10272 objects)
+Total allocated: 2.79 MB (30702 objects)                
+Total retained:  2.05 MB (16431 objects)                
 
-RAM ratio improvements x29.17856080172342 on retain objects
-RAM ratio improvements x19.11061115673195 on total_allocated objects
+------ Full preloading memory consumption for root_collection_size: 100 ----
+
+Total allocated: 33.05 MB (38332 objects)               
+Total retained:  32.00 MB (24057 objects)               
+RAM ratio improvements x15.57707431190517 on retain objects
+RAM ratio improvements x11.836000856510193 on total_allocated objects
+
 ```
 
 
