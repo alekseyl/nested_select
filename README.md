@@ -1,8 +1,15 @@
-# Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!  
-nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
-Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulated real-life example
+# WIP disclaimer
+I'm currently extracting nested_select functionality from the brest gem, including tests, and minor fixes. 
 
-Single course, a real prod set of data used by current UI (~ x33 times less RAM):
+# Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!
+nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
+Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulate real-life example
+
+Relations has a following structure: 
+Course has many topics, each topic has many lessons. 
+To display a single course you need its structure, minimum data needed is set of topic and lessons titles and ordering.
+
+**Single course**, a real prod set of data used by current UI (~ x33 times less RAM):
 
 ```
 irb(main):216:0>compare_nested_select(ids, 1, silence_ar_logger_for_memory_profiling: false)
@@ -30,7 +37,7 @@ RAM ratio improvements x33.54678126442086 on retain objects
 RAM ratio improvements x15.002820281285949 on total_allocated objects
 ```
 
-100 courses, synthetic example (there is no UI for multiple course with structure display) 
+**100 courses**, this is kinda a synthetic example (there is no UI for multiple courses display with their structure) 
 on the real prod data, but the bigger than needed collection ( x7 faster):
 
 ```
@@ -56,7 +63,6 @@ RAM ratio improvements x11.836000856510193 on total_allocated objects
 
 ```
 
-
 # A little bit of nested_select history
 Awhile ago I investigated the potential performance boost from partial instantiation 
 of database records in rails applications: [Rails nitro-fast collection rendering with PostgreSQL](https://medium.com/@leshchuk/rails-nitro-fast-collection-rendering-with-postgresql-a5fb07cc215f)
@@ -72,8 +78,7 @@ To be short among the others I've tested the idea of Partial instantiation:
 > In terms of instantiation results are: 1.3–4.2 times faster on simple type columns ( text, string, int, bool etc.), and 1.2–10 times faster when you exclude json/jsonb/store instantiation. 
 > Also all this numbers received without any instantiation callbacks like after_find.
 
-
-Also during my investigations I've kinda missed the other aspect of the problem: RAM, DB IOps, network throughput.
+Also during my investigations I've kinda missed to mention the other aspects of the problem: RAM, DB IOps, network throughput.
 Requesting less columns improves¹ all that things. 
 
 But that's a pretty obvious. There are lot of articles covering this problem an idea of partial selection:
@@ -89,14 +94,14 @@ https://pawelurbanek.com/activerecord-memory-usage
 
 And others.
 
-But the real problem is: **in rails you can't do any selection on preloading models** (until nested_select of course )) ).
+But the real problem is: **in rails you can't do any selection on preloading models** (until nested_select of course :)) ).
 Ths means that all that tree of preloaded object goes with ```SELECT table_name.*``` query.
 
 Technically speaking you may solve this problem by defining custom scopes and defining custom tailored relation with scopes. 
 But that's a lot of a boilerplate code, creating scopes and nested relations for all kinds of requests looks like unreal solution, 
 no one will do such madness.
 
-[1] I have much less idea on how other than PotsgreSQL DB-engines are working with disk in terms of partial tuples/records reading. 
+[1] I have much less idea on how other than PotsgreSQL DB-engines are working with a disk in terms of partial tuples/records reading. 
 Postgres itself will read a whole page from a disk to retrieve the record, but then lesser columns could switch retrieval to an Index-Only scan decreasing IOps significantly
 
 
@@ -115,7 +120,7 @@ So you just need to define a way to deliver select_values to instance of `Active
 ### How preloading happens in rails >= 7.0
 To be honest ( and opinionated :) ), current preloading implementation is a kinda mess, and we need to adapt to this mess without delivering some more.
 
-Let's look at the scopes example:
+Let's look at the scopes example from a specs:
 ```ruby
 # user <-habtm-> bought_items
 # user -> has_one -> user_profile -> has_many -> avatars
@@ -154,11 +159,13 @@ Install the gem and add to the application's Gemfile by executing:
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+    $ gem install nested_select
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+
+```
 
 ## Development
 
