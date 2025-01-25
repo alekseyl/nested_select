@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  test:
+    build: .
+    image: nested_select
+    command: rake test
+    volumes:
+      - './lib:/app/lib'
+      - './test:/app/test'
+      - './Gemfile:/app/Gemfile'
+      - './Gemfile.lock:/app/Gemfile.lock'
+

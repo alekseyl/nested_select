@@ -11,7 +11,7 @@ module NestedSelect
       end
 
       def apply_nested_select_values( partial_select_values )
-        return super unless reflection.parent_reflection.is_a?( ActiveRecord::Reflection::HasAndBelongsToManyReflection )
+        return super unless reflection.parent_reflection.is_a?( ActiveRecord::Reflection::HasAndBelongsToManyReflection)
 
         # when parent reflection is a HasAndBelongsToManyReflection,
         # then we don't need foreign_key to be included, as it does in super

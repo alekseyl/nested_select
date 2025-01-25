@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+frodo_avatar:
+  img_url: "https://api.rubyonrails.org/"
+  user_profile: frodo_profile
+
+sauron_avatar:
+  img_url: "https://google.com/"
+  user_profile: sauron_profile
+
+sauron_evil_eye_avatar:
+  img_url: "https://facebook.com/"
+  user_profile: sauron_profile
+
+aragorn_avatar:
+  img_url: "https://github.com/"
+  user_profile: aragorn_profile

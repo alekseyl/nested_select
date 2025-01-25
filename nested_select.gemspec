@@ -37,6 +37,16 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activerecord", ">= 7"
   spec.add_dependency "activesupport", ">= 7"
 
+  spec.add_development_dependency 'minitest'
+  spec.add_development_dependency 'bundler', '>= 1.11'
+  spec.add_development_dependency 'rake', '>= 10.0'
+  spec.add_development_dependency 'rails-i18n', '>=4'
+  spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency 'byebug'
+  spec.add_development_dependency 'stubberry'
+  spec.add_development_dependency 'rails_sql_prettifier'
+  spec.add_development_dependency 'amazing_print'
+
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
 end

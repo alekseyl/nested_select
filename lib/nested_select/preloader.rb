@@ -3,9 +3,9 @@ module NestedSelect
     extend ActiveSupport::Autoload
     extend ActiveSupport::Concern
 
-    autoload :Branch, "brest/nested_select/preloader/branch"
-    autoload :ThroughAssociation, "brest/nested_select/preloader/through_association"
-    autoload :Association, "brest/nested_select/preloader/association"
+    autoload :Branch, "nested_select/preloader/branch"
+    autoload :ThroughAssociation, "nested_select/preloader/through_association"
+    autoload :Association, "nested_select/preloader/association"
 
     included do
       ActiveRecord::Associations::Preloader::Branch.prepend(Branch)

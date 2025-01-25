@@ -1,0 +1,28 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+mug:
+  code: mug
+  name: MUG
+  price: 6.00
+  payload:
+    full_description: "The mug to join them all"
+    short_description: "THE MUG!"
+
+mug_1:
+  code: mug
+  name: Shire forever
+  price: 10.00
+  payload:
+    full_description: "Just a beer mug"
+    short_description: "mug 1"
+
+tshirt:
+  code: tshirt
+  name: FOREVER
+  price: 15.00
+
+
+hoodie:
+  code: hoodie
+  name: Hoodie big
+  price: 20.00

@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+frodo_profile:
+  user: frodo
+  address: Hole in the middle of Shire
+  zip_code: 14
+  bio: Baggins, the hobbit.
+
+sauron_profile:
+  user: sauron
+  address: Baraddur, the biggest tower
+  zip_code: 0000
+  bio: Baggins, the hobbit.
+
+aragorn_profile:
+  user: aragorn
+  address: Rambler
+  zip_code: 1111
+  bio: Strider.

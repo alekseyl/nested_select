@@ -1,0 +1,36 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+frodo:
+  name: Frodo
+  email: frd@shire.com
+  membership: :basic
+  bought_items:
+    - mug
+    - mug_1
+  stats:
+    admin_comment: "Mug lover"
+    total_money_spent: 100
+    preferred_items: ["mug"]
+    items_stats:
+      mug: 100
+
+sauron:
+  name: Sauron
+  email: evil_eye@brddr.gov
+  membership: :platinum
+  stats:
+    total_money_spent: 1000
+    preferred_items: ["hoodie"]
+    items_stats:
+      hoodie: 1000
+
+aragorn:
+  name: Aragorn
+  email: rambler@minas.gon
+  membership: :gold
+  stats:
+    total_money_spent: 400
+    preferred_items: ["tshirt", "mug" ]
+    items_stats:
+      tshirt: 100
+      mug: 300

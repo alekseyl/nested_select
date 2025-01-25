@@ -1,13 +1,17 @@
 # WIP disclaimer
-I'm currently extracting nested_select functionality from the brest gem, including tests, and minor fixes. 
+The gem is under active development now. As of version 0.2.0 you are safe to try in your prod console 
+to uncover it's potential, and try in dev/test env. 
+
+Use in prod with caution only if you are properly covered by your CI.
 
 # Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!
 nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
-Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulate real-life example
+Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulate real-life example: displaying a course with its structure.
 
-Relations has a following structure: 
-Course has many topics, each topic has many lessons. 
-To display a single course you need its structure, minimum data needed is set of topic and lessons titles and ordering.
+Given: 
+- Models are Course, Topic, Lesson. 
+- Their relations has a following structure: course has_many topics, each topic has_many lessons. 
+- To display a single course you need its structure, minimum data needed: topic and lessons titles and ordering.
 
 **Single course**, a real prod set of data used by current UI (~ x33 times less RAM):
 
@@ -38,14 +42,14 @@ RAM ratio improvements x15.002820281285949 on total_allocated objects
 ```
 
 **100 courses**, this is kinda a synthetic example (there is no UI for multiple courses display with their structure) 
-on the real prod data, but the bigger than needed collection ( x7 faster):
+on the real prod data, but the bigger than needed collection (x7 faster):
 
 ```
 irb(main):280:0> compare_nested_select(ids, 100)
 
 ------- CPU comparison, for root_collection_size: 100 ----
-       user     system      total        real           
-nested_select  1.571095   0.021778   1.592873 (  2.263369)
+                    user     system      total        real           
+nested_select    1.571095   0.021778   1.592873 (  2.263369)
 simple includes  5.374909   1.704284   7.079193 ( 15.488579)
                                                         
 ----------------- Memory comparison, for root_collection_size: 100 ---------
@@ -63,94 +67,6 @@ RAM ratio improvements x11.836000856510193 on total_allocated objects
 
 ```
 
-# A little bit of nested_select history
-Awhile ago I investigated the potential performance boost from partial instantiation 
-of database records in rails applications: [Rails nitro-fast collection rendering with PostgreSQL](https://medium.com/@leshchuk/rails-nitro-fast-collection-rendering-with-postgresql-a5fb07cc215f)
-
-To be short among the others I've tested the idea of Partial instantiation:
-
-> Sometimes different actions needs different set of columns per ORM object. You can speedup instantiation 
-> by creating sets of attributes specific for particular request. 
-> It can be done through the scopes and scoped relations inside your model.
-
-**Pluses**
-> It may be faster. How fast? Highly depends on data structure and ratio of used columns. I started from instantinating 75% of object columns and go to 1 or 2 columns being instantiated. 
-> In terms of instantiation results are: 1.3–4.2 times faster on simple type columns ( text, string, int, bool etc.), and 1.2–10 times faster when you exclude json/jsonb/store instantiation. 
-> Also all this numbers received without any instantiation callbacks like after_find.
-
-Also during my investigations I've kinda missed to mention the other aspects of the problem: RAM, DB IOps, network throughput.
-Requesting less columns improves¹ all that things. 
-
-But that's a pretty obvious. There are lot of articles covering this problem an idea of partial selection:
-
-ActiveRecord select :id column over 1000 records in a different way:
-https://samsaffron.com/archive/2018/06/01/an-analysis-of-memory-bloat-in-active-record-5-2
-
-Just another simple and newbie technics on boosting ActiveRecord ( including partial selection ):
-https://medium.com/@snapsheetclaims/11-ways-to-boost-your-activerecord-query-performance-32b9986f093f
-
-Just partial selection article: 
-https://pawelurbanek.com/activerecord-memory-usage
-
-And others.
-
-But the real problem is: **in rails you can't do any selection on preloading models** (until nested_select of course :)) ).
-Ths means that all that tree of preloaded object goes with ```SELECT table_name.*``` query.
-
-Technically speaking you may solve this problem by defining custom scopes and defining custom tailored relation with scopes. 
-But that's a lot of a boilerplate code, creating scopes and nested relations for all kinds of requests looks like unreal solution, 
-no one will do such madness.
-
-[1] I have much less idea on how other than PotsgreSQL DB-engines are working with a disk in terms of partial tuples/records reading. 
-Postgres itself will read a whole page from a disk to retrieve the record, but then lesser columns could switch retrieval to an Index-Only scan decreasing IOps significantly
-
-
-## Nested Select patch
-
-### How preloading happens in rails and when is the best time to interfere
-
-**Preloading** is a part of activerecord which tends to change pretty often.
-Practically all major releases interfere preloader code, the current implementation was introduced starting rails 7.0 version.
-But if you get the idea of current implementation, you can traverse the earlier state and get the idea how to make them work with nested select:
-Regardless of the major rails version and implementation, you will end up patching the `build_scope` method of
-`ActiveRecord::Associations::Preloader::Association`!
-
-So you just need to define a way to deliver select_values to instance of `ActiveRecord::Associations::Preloader::Association`
-
-### How preloading happens in rails >= 7.0
-To be honest ( and opinionated :) ), current preloading implementation is a kinda mess, and we need to adapt to this mess without delivering some more.
-
-Let's look at the scopes example from a specs:
-```ruby
-# user <-habtm-> bought_items
-# user -> has_one -> user_profile -> has_many -> avatars
-User.includes( :bought_items, user_profile: :avatars)
-```
-
-Preloading will create instances `Preloader` objects for:
-- each isolated preloading `Branch` which started from the root, in this case: `:bought_items` and `user_profile: :avatars`
-- each trough relation inside preloading tree, including hidden ones like habtm relation does.
-
-Each `Preloader` object building it's own preloader tree from a set of `Branch` objects.
-In a given case it might roughly look like this:
-```
-Preloader(:bought_items) -> Branch(:root) 
-                              \__ Branch(:bought_items) -> Preloader::ThroughAssociation(:bought_items)
-                              
-Preloader(user_profile: :avatars) -> Branch(:root) 
-                                        \__ Branch(:user_profile) -> Preloader::Association(:user_profile)
-                                              \__Branch(:avatars) -> Preloader::Association(:avatars)                          
-```
-
-Each `Branch` will create a set of loaders objects of `Preloader::Association` or `Preloader::ThroughAssociation`
-Then running all of them will preload nested records and establish a connections between records.
-
-To be able to select limited attributes sets, we need to deliver them to `Association` level objects, and patch `build_scope` method with it.
-
-**_Rem:_** Each `Preloader::ThroughAssociation` object creates it's own `Preloader` and starts additional 'isolated' preloading process.
-
-So implementation adds a `nested_select_values` attributes into instances of `Preloader`, `Branch`, `Association` hierarchy and some methods to populate corresponding select_values over the tree.
-
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -162,9 +78,24 @@ If bundler is not being used to manage dependencies, install the gem by executin
     $ gem install nested_select
 
 ## Usage
+Assume you have a relation users <- profile, and you want to preview users in a paginated feed, 
+and you need only :photo attribute of a profile, with nested_select you can do it like this:  
 
 ```ruby
+# this will preload profile with exact attributes: :id, :user_id and :photo
+User.includes(:profile).select(profile: :photo).limit(10)
+```
 
+## Safety
+How safe is the partial model loading? Earlier version of rails and activerecord would return nil in the case, 
+when attribute wasn't selected from a DB, but rails 6 started to raise a ActiveModel::MissingAttributeError. 
+So the major problem is already solved -- your code will not operate based on falsy blank values, it will raise an exception. 
+Just cover your actions with proper tests and you are safe. 
+
+## Testing
+
+```bash
+docker compose run test 
 ```
 
 ## Development
