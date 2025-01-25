@@ -1,6 +1,7 @@
 # WIP disclaimer
 The gem is under active development now. As of version 0.2.0 you are safe to try in your prod console 
 to uncover it's potential, and try in dev/test env. 
+Be aware as for 0.2.0 version not all relation foreign keys are extracted from relations, and you might need to specify them exactly!
 
 Use in prod with caution only if you are properly covered by your CI.
 
@@ -90,7 +91,13 @@ User.includes(:profile).select(profile: :photo).limit(10)
 How safe is the partial model loading? Earlier version of rails and activerecord would return nil in the case, 
 when attribute wasn't selected from a DB, but rails 6 started to raise a ActiveModel::MissingAttributeError. 
 So the major problem is already solved -- your code will not operate based on falsy blank values, it will raise an exception. 
-Just cover your actions with proper tests and you are safe. 
+
+## Known issues (0.2.0)
+There is an issue in 0.2.0 though.
+
+As for the version 0.2.0 you need to ensure all foreign keys are explicitly added to attributes selection tree, 
+since rails will not raise an exception while zipping models to each other, it just will not match them
+
 
 ## Testing
 
@@ -98,15 +105,19 @@ Just cover your actions with proper tests and you are safe.
 docker compose run test 
 ```
 
+## TODO
+- [ ] Cover all relation combinations and add missing functionality
+  - [ ] Ensure relations foreign keys are present on the selection
+  - [ ] Ensure belongs_to will add a foreign_key column
+- [ ] Optimize through relations ( since they loading a whole set of attributes )
+
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/nested_select. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/nested_select/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/alekseyl/nested_select. This project is intended to be a safe, 
+welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/nested_select/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
