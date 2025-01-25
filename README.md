@@ -110,6 +110,7 @@ docker compose run test
   - [ ] Ensure relations foreign keys are present on the selection
   - [ ] Ensure belongs_to will add a foreign_key column
 - [ ] Optimize through relations ( since they loading a whole set of attributes )
+- [ ] Separated rails version testing
 
 ## Development
 
