@@ -1,12 +1,9 @@
 # WIP disclaimer
-The gem is under active development now. As of version 0.2.0 you are safe to try in your prod console 
-to uncover it's potential, and try in dev/test env. 
-Be aware as for 0.2.0 version not all relation foreign keys are extracted from relations, and you might need to specify them exactly!
-
-Use in prod with caution only if you are properly covered by your CI.
+The gem is under active development now. 
+Use in prod with caution only if you are properly covered by your CI. Read **Safety** and **Limitations** sections before.
 
 # Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!
-nested_select allows to select attributes of relations during preloading process, leading to less RAM and CPU usage.
+nested_select allows the partial selection of the relations attributes during preloading process, leading to less RAM and CPU usage.
 Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulate real-life example: displaying a course with its structure.
 
 Given: 
@@ -80,11 +77,22 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 Assume you have a relation users <- profile, and you want to preview users in a paginated feed, 
-and you need only :photo attribute of a profile, with nested_select you can do it like this:  
+and you need only :photo_url attribute of a profile, with nested_select you can do it like this:  
 
 ```ruby
-# this will preload profile with exact attributes: :id, :user_id and :photo
-User.includes(:profile).select(profile: :photo).limit(10)
+class User
+  has_one :profile
+end
+
+class Profile
+  belongs_to :user
+end
+
+# this will preload profile with exact attributes: 
+# :id -- since its a primary key, 
+# :user_id -- since its a foreign_key
+# and the :photo_url as requested
+User.includes(:profile).select(profile: :photo_url).limit(10)
 ```
 
 ## Safety
@@ -92,11 +100,32 @@ How safe is the partial model loading? Earlier version of rails and activerecord
 when attribute wasn't selected from a DB, but rails 6 started to raise a ActiveModel::MissingAttributeError. 
 So the major problem is already solved -- your code will not operate based on falsy blank values, it will raise an exception. 
 
-## Known issues (0.2.0)
-There is an issue in 0.2.0 though.
+## belongs_to foreign keys limitations 
+Rails preloading happens from loaded record to their reflection step by step. 
+That's makes pretty easy to include foreign keys for has_* relations, and very hard for belongs_to, 
+to work this out you need to analyze includes based on the already loaded records, analyze and traverse their relations.
+This needs a lot of monkey patching, and for now I decided not to gow this way.
+That means in case when nesting selects based on belongs_to reflections, 
+you'll need to select their foreign keys **EXPLICITLY!** 
 
-As for the version 0.2.0 you need to ensure all foreign keys are explicitly added to attributes selection tree, 
-since rails will not raise an exception while zipping models to each other, it just will not match them
+```ruby
+class Avatar < ApplicationRecord
+  belongs_to user
+  has_one :image
+end
+
+class Image < ApplicationRecord
+  belongs_to :avatar
+end
+
+Image.includes(avatar: :user).select(avatar: [:id, :size, { user: [:email] }]).load # <--- will raise a Missing Attribute exception 
+
+#> ActiveModel::MissingAttributeError: Parent reflection avatar was missing foreign key user_id in nested selection
+#> while trying to preload belongs_to reflection named user.
+#> Hint: didn't you forgot to add user_id inside [:id, :size]?
+
+Image.includes(avatar: :user).select(avatar: [:id, :size, :user_id, { user: [:email] }]).load
+```
 
 
 ## Testing
@@ -107,10 +136,14 @@ docker compose run test
 
 ## TODO
 - [ ] Cover all relation combinations and add missing functionality
-  - [ ] Ensure relations foreign keys are present on the selection
-  - [ ] Ensure belongs_to will add a foreign_key column
+  - [x] Ensure relations foreign keys are present on the selection
+  - [x] Ensure primary key will be added
+  - [-] Ensure belongs_to will add a foreign_key column
 - [ ] Optimize through relations ( since they loading a whole set of attributes )
 - [ ] Separated rails version testing
+- [x] Merge multiple nested selections 
+- [x] Don't apply any selection if blank ( allows to limit only part of subselection tree)
+- [x] Allows to use custom attributes
 
 ## Development
 

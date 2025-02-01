@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nested_select (0.1.0)
+    nested_select (0.2.0)
       activerecord (>= 7)
       activesupport (>= 7)
 

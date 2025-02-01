@@ -52,7 +52,8 @@ Regardless of the major rails version and implementation, you will end up patchi
 So you just need to define a way to deliver select_values to instance of `ActiveRecord::Associations::Preloader::Association`
 
 ### How preloading happens in rails >= 7.0
-To be honest ( and opinionated :) ), current preloading implementation is a kinda mess, and we need to adapt to this mess without delivering some more.
+To be honest ( and opinionated :) ), current preloading implementation is messy, 
+and we need to adapt to this mess without delivering some more.
 
 Let's look at the scopes example from a specs:
 ```ruby
@@ -83,5 +84,5 @@ To be able to select limited attributes sets, we need to deliver them to `Associ
 
 **_Rem:_** Each `Preloader::ThroughAssociation` object creates it's own `Preloader` and starts additional 'isolated' preloading process.
 
-The implementation of nested_seelct adds a `nested_select_values` attributes into instances of `Preloader`, `Branch`, `Association` hierarchy 
+The implementation of nested_select adds a `nested_select_values` attributes into instances of `Preloader`, `Branch`, `Association` hierarchy 
 and some methods to populate corresponding select_values over the tree, trying to be as less invasive as it could be.

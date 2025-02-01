@@ -9,8 +9,8 @@ module NestedSelect
 
     included do
       ActiveRecord::Associations::Preloader::Branch.prepend(Branch)
-      ActiveRecord::Associations::Preloader::ThroughAssociation.prepend( ThroughAssociation )
-      ActiveRecord::Associations::Preloader::Association.prepend( Association )
+      ActiveRecord::Associations::Preloader::ThroughAssociation.prepend(ThroughAssociation)
+      ActiveRecord::Associations::Preloader::Association.prepend(Association)
     end
     def apply_nested_select_values(nested_select_values)
       distribute_nested_select_over_loading_tree(@tree, nested_select_values)
@@ -26,8 +26,8 @@ module NestedSelect
       # it could be a case when selection tree is not that deep than Branch tree.
       return if sub_nested_select_values.blank?
 
-      sub_tree.children.each do
-        distribute_nested_select_over_loading_tree( _1, sub_nested_select_values[_1.association])
+      sub_tree.children.each do |chld_brnch|
+        distribute_nested_select_over_loading_tree(chld_brnch, sub_nested_select_values[chld_brnch.association])
       end
     end
   end
