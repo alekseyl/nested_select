@@ -101,10 +101,10 @@ when attribute wasn't selected from a DB, but rails 6 started to raise a ActiveM
 So the major problem is already solved -- your code will not operate based on falsy blank values, it will raise an exception. 
 
 ## belongs_to foreign keys limitations 
-Rails preloading happens from loaded record to their reflection step by step. 
+Rails preloading happens from loaded records to their reflections step by step. 
 That's makes pretty easy to include foreign keys for has_* relations, and very hard for belongs_to, 
 to work this out you need to analyze includes based on the already loaded records, analyze and traverse their relations.
-This needs a lot of monkey patching, and for now I decided not to gow this way.
+This needs a lot of monkey patching, and for now I decided not to go this way.
 That means in case when nesting selects based on belongs_to reflections, 
 you'll need to select their foreign keys **EXPLICITLY!** 
 
@@ -118,13 +118,13 @@ class Image < ApplicationRecord
   belongs_to :avatar
 end
 
-Image.includes(avatar: :user).select(avatar: [:id, :size, { user: [:email] }]).load # <--- will raise a Missing Attribute exception 
+Image.includes(avatar: :user).select(avatar: [:size, { user: [:email] }]).load # <--- will raise a Missing Attribute exception 
 
 #> ActiveModel::MissingAttributeError: Parent reflection avatar was missing foreign key user_id in nested selection
 #> while trying to preload belongs_to reflection named user.
 #> Hint: didn't you forgot to add user_id inside [:id, :size]?
 
-Image.includes(avatar: :user).select(avatar: [:id, :size, :user_id, { user: [:email] }]).load
+Image.includes(avatar: :user).select(avatar: [:size, :user_id, { user: [:email] }]).load
 ```
 
 
@@ -138,7 +138,7 @@ docker compose run test
 - [ ] Cover all relation combinations and add missing functionality
   - [x] Ensure relations foreign keys are present on the selection
   - [x] Ensure primary key will be added
-  - [-] Ensure belongs_to will add a foreign_key column
+  - [-] Ensure belongs_to will add a foreign_key column (Too hard to manage :(, its definitely not a low hanging fruit)
 - [ ] Optimize through relations ( since they loading a whole set of attributes )
 - [ ] Separated rails version testing
 - [x] Merge multiple nested selections 
