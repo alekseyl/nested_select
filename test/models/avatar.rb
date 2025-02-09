@@ -9,6 +9,8 @@ class Avatar < ApplicationRecord
   #-------------------- 8. has and belongs ------------------
   belongs_to :user_profile, inverse_of: :avatars
   has_one :user, through: :user_profile, inverse_of: :avatars
+
+  has_many :images, as: :owner, inverse_of: :owner
   #-------------------- 9. accept nested macros  ------------
   #-------------------- 10. validation ----------------------
   #-------------------- 11. before/after callbacks ----------

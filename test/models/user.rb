@@ -11,6 +11,9 @@ class User < ApplicationRecord
   has_and_belongs_to_many :bought_items, class_name: :Item, join_table: :items_users
   has_one :user_profile, inverse_of: :user
   has_many :avatars, through: :user_profile, inverse_of: :user
+
+  has_many :through_and_habtm_images, through: :bought_items, class_name: :Image, source: :images
+  has_many :through_avatar_images, through: :avatars, class_name: :Image, source: :images
   #-------------------- 9. accept nested macros  ------------
   accepts_nested_attributes_for :user_profile
   #-------------------- 10. validation ----------------------

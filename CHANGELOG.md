@@ -1,3 +1,8 @@
+## [0.4.0] - 2025-02-09
+- through relations are now also supported and allowed to partial selection via reverse nested_selection tree
+- README updated with more examples and corner cases
+- nested_select will prevent multiple partial instantiation with different attributes
+
 ## [0.3.0] - 2025-01-25
 
 - nested_select belongs_to limitation now prevents accidental foreign_key absence 

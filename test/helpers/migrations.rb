@@ -40,8 +40,9 @@ class CreateAllTables < ActiveRecord::Migration[6.0]
     create_join_table :users, :items
 
     create_table :images, primary_key: :uid do |t|
-      t.string :img
+      t.string :thumb
       t.references :owner, polymorphic: true
+      t.timestamps
     end
   end
 end

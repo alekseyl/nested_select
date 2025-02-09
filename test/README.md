@@ -26,5 +26,5 @@ User has_many user_profiles, UserProfile has_many avatars
 Rem. I'm always freaking googling everytime I need to run single test so I'll just keep it here:
 
 ```ruby
-rake test TEST=test/test_nested_select.rb TESTOPTS="--name=/bb/"
+bundle exec ruby -Itest test/test_through_reflections.rb x
 ```

@@ -7,6 +7,7 @@ module NestedSelect
         prevent_belongs_to_foreign_key_absence!(reflection)
 
         super.tap do |ldrs|
+          # nested_select_values contains current level selection + nested relation selections
           ldrs.each{ _1.apply_nested_select_values(nested_select_values) } if nested_select_values.present?
         end
       end
@@ -17,7 +18,8 @@ module NestedSelect
 
         # ActiveRecord will not raise in case its missing, so we should prevent silent error here
         if parent.nested_select_values.present? &&
-          !parent.nested_select_values.map(&:to_sym).include?( reflection.foreign_key.to_sym )
+          !parent.nested_select_values.grep_v(Hash)
+                 .map(&:to_sym).include?(reflection.foreign_key.to_sym)
 
           raise ActiveModel::MissingAttributeError, <<~ERR
             Parent reflection #{parent.association} was missing foreign key #{reflection.foreign_key} in nested selection,
@@ -26,7 +28,6 @@ module NestedSelect
           ERR
         end
       end
-
     end
   end
 end
