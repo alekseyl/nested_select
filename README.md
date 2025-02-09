@@ -135,15 +135,15 @@ class User
   has_many :through_avatar_images, through: :avatars, class_name: :Image, source: :images
 end
 
-  # only through_avatar_images is matter here, and we want everything 
+  # only through_avatar_images is matter here, and we want everything else to be as small as possible
   user = User.includes(:through_avatar_images)
              .select(through_avatar_images: ["images.*", avatars: [user_profile: [:id]]]).first
   
   # through_avatar_images -- loaded in full
   # avatars, user_profile -- only relations columns id, user_profile_id e.t.c
 ```
-**REM** As for version 0.4.0 for the earliest relation in a through chain you need to select something, 
-otherwise nested_select will select everything ))
+**REM** As for version 0.4.0 for the earliest relation in a through chain you need to select something, hence 
+```user_profile: [:id]```, otherwise nested_select will select everything for the end model
 
 # Safety
 How safe is the partial model loading? Earlier version of rails and activerecord would return nil in the case, 
@@ -177,10 +177,6 @@ This needs a lot of monkey patching, and for now I decided not to go this way.
 That means in case when nesting selects based on belongs_to reflections, 
 you'll need to select their foreign keys **EXPLICITLY!** 
 
-## will not work with ar_lazy_preload
-Right now it will not work with ar_lazy_preload gem. nested_select relies on the includes_values definition 
-of a relation. If you are doing it in a lazy way, there weren't any explicit includes, that means it will not extract any nested selection.
-
 ```ruby
 class Avatar < ApplicationRecord
   belongs_to user
@@ -199,6 +195,10 @@ Image.includes(avatar: :user).select(avatar: [:size, { user: [:email] }]).load #
 
 Image.includes(avatar: :user).select(avatar: [:size, :user_id, { user: [:email] }]).load
 ```
+
+## will not work with ar_lazy_preload
+Right now it will not work with ar_lazy_preload gem. nested_select relies on the includes_values definition
+of a relation. If you are doing it in a lazy way, there weren't any explicit includes, that means it will not extract any nested selection.
 
 ## Testing
 
