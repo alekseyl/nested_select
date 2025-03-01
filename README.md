@@ -1,18 +1,19 @@
 # WIP disclaimer
-The gem is under active development now. 
-Use in prod with caution only if you are properly covered by your CI. 
-Read **Safety** and **Limitations** sections before.
+The gem is under active development but already stable and covered a lot of cases. 
+Be sure to read **Safety** and **Limitations** sections.
 
 # Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!
-nested_select allows the partial selection of the relations attributes during preloading process, leading to less RAM and CPU usage.
-Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to emulate real-life example: displaying a course with its structure.
+nested_select allows the partial selection of the relations attributes during preloading process, 
+leading to less RAM and CPU usage.
+Here is a benchmark output for a [gist I've created](https://gist.github.com/alekseyl/5d08782808a29df6813f16965f70228a) to run real-life example: 
+displaying a course with its structure.
 
 Given: 
 - Models are Course, Topic, Lesson. 
 - Their relations has a following structure: course has_many topics, each topic has_many lessons. 
 - To display a single course you need its structure, minimum data needed: topic and lessons titles and ordering.
 
-**Single course**, a real prod set of data used by current UI (~ x33 times less RAM):
+**Single course**, a real example against production data and a real flow (~ x33 times less RAM):
 
 ```
 irb(main):216:0>compare_nested_select(ids, 1, silence_ar_logger_for_memory_profiling: false)
@@ -41,8 +42,8 @@ RAM ratio improvements x33.54678126442086 on retain objects
 RAM ratio improvements x15.002820281285949 on total_allocated objects
 ```
 
-**100 courses**, this is kinda a synthetic example (there is no UI for multiple courses display with their structure) 
-on the real prod data, but the bigger than needed collection (x7 faster):
+**100 courses**, this is kinda a synthetic example since there is no UI for multiple courses display together with their structures.
+It executed against the real production data. (nested select serves x7 faster):
 
 ```
 irb(main):280:0> compare_nested_select(ids, 100)
@@ -66,9 +67,8 @@ RAM ratio improvements x15.57707431190517 on retain objects
 RAM ratio improvements x11.836000856510193 on total_allocated objects
 ```
 
-Despite this little click bait it's pretty obvious that it might not be even the biggest numbers, 
-if you have heavy relations instantiation for heavy views or reports generation, 
-and you want it to be less demanding in RAM and CPU -- you should try nested_select
+**Summary:** if you have CPU/RAM bottlenecks, heavy relations instantiation for heavy views or reports generation, 
+and you want it to be less demanding in RAM and CPU -- you should try nested_select. 
 
 ## Installation
 
@@ -102,10 +102,11 @@ end
 User.includes(:profile).select(profile: :photo_url).limit(10)
 ```
 
-### Partial through relations preloading
-Whenever you are using through relations between models rails will fully load all intermediate objects under the hood,
-that is definitely wastes lots of RAM, CPU including those on the DB side. 
-You can limit through objects only to relation columns. 
+### Partial preloading of through relations 
+Whenever you are using `through` relations between models and running preload, 
+then rails will fully load all intermediate objects under the hood!
+That is definitely wastes lots of RAM, CPU including those on the DB side. 
+With nested_select you can apply selections to `through` relations. 
 Ex:
 
 ```ruby
@@ -115,11 +116,11 @@ class User
 end
 
   # pay attention user_profile relation, wasn't included explicitly, 
-  # but still rails needed to be preloaded to match and preload avatars here
+  # but still rails needed them to be preloaded to be able to match and preload avatars
   user = User.includes(:avatars)
              .select(avatars: [:img_url, { user_profile: [:zip_code] }]).first
   
-  # Now user - loaded fully
+  # user - loaded fully
   # avatars - foreign and primary keys needed to establish relations + img_url
   # user_profile - foreign and primary keys + zip_code
 ```

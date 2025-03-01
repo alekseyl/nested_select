@@ -11,30 +11,6 @@ jobs:
       matrix:
         ruby: ["3.2", "3.3", "3.4"]
 
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      # more about postgres image can be read here: https://hub.docker.com/_/postgres
-      # more about using pg image in CI: https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: niceql-test
-          POSTGRES_USER: postgres
-        # this options should be kept, otherwise pg container will not be waited
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --network-alias postgres
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby

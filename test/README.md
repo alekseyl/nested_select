@@ -14,11 +14,7 @@ General features can be covered once:
 - [x] does not interfere with root relation selection
 - [x] nested custom attribute 
 
-Models relations and combinations to test 
-
-```
-
-```
+Models relations and combinations to test
 
 # Has some
 User has_many user_profiles, UserProfile has_many avatars
@@ -26,5 +22,5 @@ User has_many user_profiles, UserProfile has_many avatars
 Rem. I'm always freaking googling everytime I need to run single test so I'll just keep it here:
 
 ```ruby
-bundle exec ruby -Itest test/test_through_reflections.rb x
+bundle exec ruby -Itest test/test_through_reflections.rb
 ```

@@ -63,7 +63,7 @@ class TestThroughReflections < ActiveSupport::TestCase
 
   test "will load everything if only nested selections mentioned" do
     user = User.includes(:through_avatar_images)
-               .select(through_avatar_images: ["images.*", avatars: [user_profile: [:id]]])
+               .select(through_avatar_images: [avatars: [user_profile: [:id]]])
                .find(identify(:frodo))
 
     assert_equal(user.through_avatar_images.map(&:id), [identify(:avatar_frodo_image)])
