@@ -47,6 +47,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rails_sql_prettifier'
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'rubocop-shopify'
+  spec.add_development_dependency "appraisal"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

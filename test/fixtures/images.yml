@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+mug_image:
+  owner: mug (Item)
+  thumb: thumb.org/mug.jpg
+
+mug_1_image:
+  owner: mug_1 (Item)
+  thumb: thumb.org/mug_1.jpg
+
+avatar_frodo_image:
+  owner: frodo_avatar (Avatar)
+  thumb: thumb.org/f_face.jpg

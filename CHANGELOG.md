@@ -1,3 +1,7 @@
+## [0.4.1] - 2025-03-01
+- Appraisal added as a development dependency
+- added github CI 
+
 ## [0.4.0] - 2025-02-09
 - through relations are now also supported and allowed to partial selection via reverse nested_selection tree
 - README updated with more examples and corner cases

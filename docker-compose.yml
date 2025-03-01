@@ -11,3 +11,11 @@ services:
       - './Gemfile:/app/Gemfile'
       - './Gemfile.lock:/app/Gemfile.lock'
 
+  appraisal:
+    build:
+      context: .
+      dockerfile: Dockerfile_apprsl
+    image: nested_select_appraisal
+    command: /bin/bash -c 'service postgresql start && appraisal rake test'
+    volumes:
+      - '.:/app'

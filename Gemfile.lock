@@ -44,6 +44,10 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
     amazing_print (1.7.2)
+    appraisal (2.5.0)
+      bundler
+      rake
+      thor (>= 0.14.0)
     ast (2.4.2)
     base64 (0.2.0)
     benchmark (0.4.0)
@@ -158,6 +162,7 @@ PLATFORMS
 
 DEPENDENCIES
   amazing_print
+  appraisal
   bundler (>= 1.11)
   byebug
   minitest (~> 5.16)
