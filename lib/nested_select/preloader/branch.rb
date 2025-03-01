@@ -23,7 +23,7 @@ module NestedSelect
 
           raise ActiveModel::MissingAttributeError, <<~ERR
             Parent reflection #{parent.association} was missing foreign key #{reflection.foreign_key} in nested selection,
-            while trying to preload belongs_to reflection named #{reflection.name}. 
+            while trying to preload belongs_to reflection named #{reflection.name}.
             Hint: didn't you forgot to add #{reflection.foreign_key} inside #{parent.nested_select_values}?
           ERR
         end

@@ -4,17 +4,26 @@ module NestedSelect
       attr_reader :nested_select_values
 
       def build_scope
-        nested_select_values.blank? ? super :
-          super.select(*nested_select_values.grep_v(Hash).map{_1.try(:to_s) }.uniq)
+        association_nested_select_values.blank? ? super : super.select(association_nested_select_values)
       end
 
       def apply_nested_select_values(partial_select_values)
+        @nested_select_values = [*partial_select_values]
+        ensure_nesting_selection_integrity!(association_nested_select_values)
+      end
+      def reflection_relation_keys_attributes
         foreign_key = reflection.foreign_key unless reflection.is_a?(ActiveRecord::Reflection::BelongsToReflection)
-        @nested_select_values = [*partial_select_values, *foreign_key, *reflection.klass.primary_key]
-        ensure_nesting_selection_integrity!
+        [*foreign_key, *reflection.klass.primary_key].map(&:to_s)
       end
 
-      def ensure_nesting_selection_integrity!
+      def association_nested_select_values
+        this_association_select_values = nested_select_values&.grep_v(Hash)&.map {_1.try(:to_s) }
+        return if this_association_select_values.blank?
+
+        [*this_association_select_values, *reflection_relation_keys_attributes].uniq
+      end
+
+      def ensure_nesting_selection_integrity!(nested_select_final_values)
         single_owner = owners.first
         # do nothing unless not yet loaded
         return unless single_owner.association(reflection.name).loaded?
@@ -25,7 +34,7 @@ module NestedSelect
         single_reflection_record = single_reflection_record.first if single_reflection_record.is_a?(Enumerable)
 
         attributes_loaded = single_reflection_record.attributes.keys.map(&:to_s)
-        current_selection = @nested_select_values.grep_v(Hash).map(&:to_s)
+        current_selection = nested_select_final_values.grep_v(Hash).map(&:to_s)
 
         basic_attributes_matched = (attributes_loaded & reflection.klass.column_names).tally ==
                                    (current_selection & reflection.klass.column_names).tally

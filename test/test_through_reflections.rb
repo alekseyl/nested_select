@@ -6,7 +6,7 @@ class TestThroughReflections < ActiveSupport::TestCase
 
   self.use_instantiated_fixtures = true
 
-  test "will raise attribute error if nesting selection branches differ" do
+  test "will raise attribute error if nesting selection branches differ bb" do
     scope = User.includes(:through_avatar_images, :avatars)
                 .select(avatars: [:img_url, { user_profile: [:zip_code] }],
                         through_avatar_images: [avatars: [:created_at, { user_profile: [:bio] }]])
@@ -51,7 +51,7 @@ class TestThroughReflections < ActiveSupport::TestCase
     assert_nothing_raised { ava.images.first.thumb }
   end
 
-  test "allows partial selection both way usual and reverse (=through) bb" do
+  test "mentioning clear relations in reverse order works OK, and loads only relation keys columns" do
     user = User.includes(:through_avatar_images)
                .select(through_avatar_images: [:thumb, avatars: [user_profile: [:id]]])
                .find(identify(:frodo))
@@ -61,7 +61,7 @@ class TestThroughReflections < ActiveSupport::TestCase
     assert_raises(ActiveModel::MissingAttributeError) { user.through_avatar_images.map(&:created_at) }
   end
 
-  test "will load everything if only nested selections mentioned" do
+  test "will touch selection of the main through association if not specified any" do
     user = User.includes(:through_avatar_images)
                .select(through_avatar_images: [avatars: [user_profile: [:id]]])
                .find(identify(:frodo))

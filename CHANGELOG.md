@@ -1,3 +1,7 @@
+## [0.4.2] - 2025-03-01
+- Refactoring
+- Removed all commented out code
+
 ## [0.4.1] - 2025-03-01
 - Appraisal added as a development dependency
 - added github CI 
