@@ -51,17 +51,20 @@ class TestThroughReflections < ActiveSupport::TestCase
     assert_nothing_raised { ava.images.first.thumb }
   end
 
-  test "mentioning clear relations in reverse order works OK, and loads only relation keys columns" do
+  test "through relations loads only relation keys columns when used :id" do
     user = User.includes(:through_avatar_images)
-               .select(through_avatar_images: [:thumb, avatars: [user_profile: [:id]]])
+               .select(through_avatar_images: [avatars: [:id, user_profile: [:id]]])
                .find(identify(:frodo))
 
-    assert_equal(user.through_avatar_images.map(&:id), [identify(:avatar_frodo_image)])
-    assert_equal(user.through_avatar_images.map(&:thumb), [images(:avatar_frodo_image).thumb])
-    assert_raises(ActiveModel::MissingAttributeError) { user.through_avatar_images.map(&:created_at) }
+    ava = user.through_avatar_images.first.owner
+    assert_raises(ActiveModel::MissingAttributeError) { ava.created_at }
+    assert_nothing_raised { ava.user_profile_id; ava.id }
+
+    assert_raises(ActiveModel::MissingAttributeError) { ava.user_profile.bio }
+    assert_nothing_raised { ava.user_profile.user_id; ava.user_profile.id}
   end
 
-  test "will touch selection of the main through association if not specified any" do
+  test "will select all of the main through association if only nested models mentioned" do
     user = User.includes(:through_avatar_images)
                .select(through_avatar_images: [avatars: [user_profile: [:id]]])
                .find(identify(:frodo))

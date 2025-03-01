@@ -138,13 +138,22 @@ end
 
   # only through_avatar_images is matter here, and we want everything else to be as small as possible
   user = User.includes(:through_avatar_images)
-             .select(through_avatar_images: ["images.*", avatars: [user_profile: [:id]]]).first
+             .select(through_avatar_images: [avatars: [:id, user_profile: [:id]]]).first
   
   # through_avatar_images -- loaded in full
   # avatars, user_profile -- only relations columns id, user_profile_id e.t.c
 ```
-**REM** As for version 0.4.0 for the earliest relation in a through chain you need to select something, hence 
-```user_profile: [:id]```, otherwise nested_select will select everything for the end model
+
+**REM** There was an idea for through relations use a skinny approach: no nested attributes means, 
+only relation keys should be loaded:
+
+```ruby
+  user = User.includes(:through_avatar_images)
+             .select(through_avatar_images: [avatars: :user_profile]).first
+```
+but that could be easily confused with normal flow behaviour, so I stick to basic default: no nested attributes,
+means default behaviour, i.e. all attributes. 
+
 
 # Safety
 How safe is the partial model loading? Earlier version of rails and activerecord would return nil in the case, 
