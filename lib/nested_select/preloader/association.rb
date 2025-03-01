@@ -23,6 +23,7 @@ module NestedSelect
         [*this_association_select_values, *reflection_relation_keys_attributes].uniq
       end
 
+      # ensure that different preloading branches will match nested selected attributes
       def ensure_nesting_selection_integrity!(nested_select_final_values)
         single_owner = owners.first
         # do nothing unless not yet loaded

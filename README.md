@@ -1,7 +1,3 @@
-# WIP disclaimer
-The gem is under active development but already stable and covered a lot of cases. 
-Be sure to read **Safety** and **Limitations** sections.
-
 # Nested select -- 7 times faster and 33 times less RAM on preloading relations with heavy columns!
 nested_select allows the partial selection of the relations attributes during preloading process, 
 leading to less RAM and CPU usage.
@@ -222,7 +218,7 @@ docker compose run test
   - [x] Ensure primary key will be added
   - [-] Ensure belongs_to will add a foreign_key column (Too hard to manage :(, its definitely not a low hanging fruit)
 - [x] Optimize through relations ( since they loading a whole set of attributes )
-- [ ] Separated rails version testing
+- [x] Separated rails version testing
 - [x] Merge multiple nested selections 
 - [x] Don't apply any selection if blank ( allows to limit only part of subselection tree)
 - [x] Allows to use custom attributes
