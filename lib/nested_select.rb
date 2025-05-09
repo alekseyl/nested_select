@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "logger" # Fix concurrent-ruby removing logger dependency which Rails itself does not have
 require_relative "nested_select/version"
 
 module NestedSelect

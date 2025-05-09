@@ -16,7 +16,10 @@ RUN gem install bundler
 COPY lib/nested_select/version.rb /app/lib/nested_select/version.rb
 COPY nested_select.gemspec /app/
 COPY Gemfil* /app/
-COPY Appraisals /app/
+
 #
 RUN bundle install
-RUN bundle exec appraisal install
+
+COPY gemfiles /app/
+COPY Appraisals /app/
+RUN appraisal install

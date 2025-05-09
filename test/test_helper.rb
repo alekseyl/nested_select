@@ -2,6 +2,7 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
+require "logger" # Fix concurrent-ruby removing logger dependency which Rails itself does not have
 require 'active_record'
 require 'active_support'
 require 'minitest/autorun'
@@ -18,7 +19,11 @@ require_relative 'helpers/active_record_initializers'
 ActiveSupport::TestCase.include ActiveRecord::TestDatabases
 ActiveSupport::TestCase.include ActiveRecord::TestFixtures
 
-ActiveSupport::TestCase.fixture_paths << "test/fixtures"
+if ActiveSupport::TestCase.respond_to?(:fixture_paths)
+  ActiveSupport::TestCase.fixture_paths << "test/fixtures"
+else
+  ActiveSupport::TestCase.fixture_path = "test/fixtures" # File.expand_path("../test/fixtures", __FILE__)
+end
 ActiveSupport::TestCase.fixtures :all
 module TestCaseHelpers
   def identify(fixture_name)
