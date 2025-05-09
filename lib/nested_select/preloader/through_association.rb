@@ -8,7 +8,7 @@ module NestedSelect
           scope: through_scope,
           associate_by_default: false,
           ).tap do
-          _1.apply_nested_select_values(nested_select_values.grep(Hash))
+          _1.apply_nested_select_values(nested_select_values&.grep(Hash))
         end.loaders
       end
 

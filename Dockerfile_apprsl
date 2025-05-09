@@ -13,8 +13,8 @@ RUN sh -c 'echo "local   all             all                                    
 
 RUN gem install bundler
 
-COPY lib/rails_sql_prettifier/version.rb /app/lib/rails_sql_prettifier/version.rb
-COPY rails_sql_prettifier.gemspec /app/
+COPY lib/nested_select/version.rb /app/lib/nested_select/version.rb
+COPY nested_select.gemspec /app/
 COPY Gemfil* /app/
 COPY Appraisals /app/
 #

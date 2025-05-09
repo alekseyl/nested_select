@@ -73,4 +73,8 @@ class TestThroughReflections < ActiveSupport::TestCase
     assert_equal(user.through_avatar_images.map(&:thumb), [images(:avatar_frodo_image).thumb])
     assert_nothing_raised { user.through_avatar_images.map(&:created_at) }
   end
+  
+  test 'it works without regression on basic through scope' do
+    assert_nothing_raised { User.includes(:through_avatar_images).find(identify(:frodo)) }
+  end
 end

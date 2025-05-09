@@ -1,3 +1,6 @@
+## [0.4.3] - 2025-05-09
+- fixed regression on through scopes whenever nested_select_values are blank
+
 ## [0.4.2] - 2025-03-01
 - Refactoring
 - Removed all commented out code

@@ -5,7 +5,7 @@ Here is a benchmark output for a [gist I've created](https://gist.github.com/ale
 displaying a course with its structure.
 
 Given: 
-- Models are Course, Topic, Lesson. 
+- Models are: Course, Topic, Lesson. 
 - Their relations has a following structure: course has_many topics, each topic has_many lessons. 
 - To display a single course you need its structure, minimum data needed: topic and lessons titles and ordering.
 
@@ -38,8 +38,8 @@ RAM ratio improvements x33.54678126442086 on retain objects
 RAM ratio improvements x15.002820281285949 on total_allocated objects
 ```
 
-**100 courses**, this is kinda a synthetic example since there is no UI for multiple courses display together with their structures.
-It executed against the real production data. (nested select serves x7 faster):
+**100 courses**, this is kinda a synthetic example since there is no UI for multiple courses
+display together with their structures. It executed against the real production data. (nested select serves x7 faster):
 
 ```
 irb(main):280:0> compare_nested_select(ids, 100)
