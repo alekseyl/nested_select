@@ -51,6 +51,7 @@ Gem::Specification.new do |spec|
   # for ruby 3.4 tests compat
   spec.add_development_dependency "mutex_m"
   spec.add_development_dependency "bigdecimal"
+  spec.add_development_dependency "drb"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
