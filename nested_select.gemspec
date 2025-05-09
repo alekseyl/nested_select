@@ -48,7 +48,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'rubocop-shopify'
   spec.add_development_dependency "appraisal"
+  # for ruby 3.4 tests compat
   spec.add_development_dependency "mutex_m"
+  spec.add_development_dependency "bigdecimal"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
