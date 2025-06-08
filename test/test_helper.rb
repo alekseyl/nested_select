@@ -19,11 +19,13 @@ require_relative 'helpers/active_record_initializers'
 ActiveSupport::TestCase.include ActiveRecord::TestDatabases
 ActiveSupport::TestCase.include ActiveRecord::TestFixtures
 
+# depends on rails version
 if ActiveSupport::TestCase.respond_to?(:fixture_paths)
   ActiveSupport::TestCase.fixture_paths << "test/fixtures"
 else
   ActiveSupport::TestCase.fixture_path = "test/fixtures" # File.expand_path("../test/fixtures", __FILE__)
 end
+
 ActiveSupport::TestCase.fixtures :all
 module TestCaseHelpers
   def identify(fixture_name)

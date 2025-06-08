@@ -16,10 +16,11 @@ General features can be covered once:
 
 Models relations and combinations to test
 
-# Has some
+# Has_* some
 User has_many user_profiles, UserProfile has_many avatars
 
-Rem. I'm always freaking googling everytime I need to run single test so I'll just keep it here:
+# Reminder
+Rem. I'm always freaking googling everytime I need to run a single test so I'll just keep it here:
 
 ```ruby
 bundle exec ruby -Itest test/test_through_reflections.rb

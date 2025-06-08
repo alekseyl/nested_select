@@ -1,6 +1,5 @@
 ## [0.4.4] - 2025-05-09
 - fixed appraisals and local docker compose
-- 
 
 ## [0.4.3] - 2025-05-09
 - fixed regression on through scopes whenever nested_select_values are blank
