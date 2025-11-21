@@ -31,8 +31,11 @@ module NestedSelect
       scope = strict_loading_value ? StrictLoadingScope : nil
       preload.each do |associations|
         ActiveRecord::Associations::Preloader.new(records:, associations:, scope:)
-          .tap{_1.apply_nested_select_values(nested_select_values) } # <-- Patching code
-          .call
+          .tap{
+            # at this momen nested_select_values will have a structure of an array of one hash element, 
+            # with multiple keys matching those in associations, so we need to separate them per branch
+            _1.apply_nested_select_values([nested_select_values.first.slice(*(associations.try(:keys)||associations))]) # <-- Patching code
+          }.call
       end
     end
   end
