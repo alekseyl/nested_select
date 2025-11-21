@@ -34,7 +34,7 @@ module NestedSelect
           .tap{
             # at this momen nested_select_values will have a structure of an array of one hash element, 
             # with multiple keys matching those in associations, so we need to separate them per branch
-            _1.apply_nested_select_values([nested_select_values.first.slice(*(associations.try(:keys)||associations))]) # <-- Patching code
+            _1.apply_nested_select_values([nested_select_values.first.slice(*(associations.try(:keys)||associations))]) if nested_select_values.present? # <-- Patching code
           }.call
       end
     end
