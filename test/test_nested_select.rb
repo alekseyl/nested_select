@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "test_helper"
 
 class TestNestedSelect < ActiveSupport::TestCase
@@ -21,7 +22,7 @@ class TestNestedSelect < ActiveSupport::TestCase
 
   test "works fine with inverse_of basic reflection" do
     user = User.includes(user_profile: :avatars)
-               .select("users.*", user_profile: [:id, :user_id, {avatars: [:id, :user_profile_id]}])
+               .select("users.*", user_profile: [:id, :user_id, { avatars: [:id, :user_profile_id] }])
                .find(identify(:frodo))
 
     # NestedSelect::Preloader::Branch#preloaders_for_reflection
@@ -29,10 +30,10 @@ class TestNestedSelect < ActiveSupport::TestCase
     assert_equal(user.user_profile.object_id, user.user_profile.avatars.first.user_profile.object_id)
   end
 
-  test 'nested select will merge nested selection scopes correctly' do
+  test "nested select will merge nested selection scopes correctly" do
     scope = User.includes(user_profile: :avatars).select(user_profile: [:zip_code])
     scope = scope.select(user_profile: [:bio, { avatars: [:id] }])
-    assert_equal(scope.nested_select_values[0][:user_profile].tally, [:bio, :zip_code, { avatars: [:id] }].tally )
+    assert_equal(scope.nested_select_values[0][:user_profile].tally, [:bio, :zip_code, { avatars: [:id] }].tally)
 
     scope = scope.select(user_profile: { avatars: [:img_url] })
     assert_equal(scope.nested_select_values[0][:user_profile].grep_v(Hash).sort, [:bio, :zip_code])
@@ -57,9 +58,24 @@ class TestNestedSelect < ActiveSupport::TestCase
 
   test "nested custom attribute in a nested selection" do
     user = User.includes(:user_profile).select(
-      user_profile: [:id, "(SELECT COUNT(*) FROM avatars WHERE user_profiles.id = avatars.user_profile_id) as avs_count"]
+      user_profile: [:id, "(SELECT COUNT(*) FROM avatars WHERE user_profiles.id = avatars.user_profile_id) as avs_count"],
     ).find(identify(:sauron))
 
     assert_equal(user.user_profile.avs_count, 2)
+  end
+
+  # regression test
+  test "will load nested selections with belongs_to and multiple relation branches" do
+    scope = Avatar.includes(:user_profile, :images)
+                  .select(:user_profile_id, images: [:url], user_profile: [:bio])
+
+    assert_nothing_raised { scope.limit(2).to_a }
+  end
+
+  test "will load nested selections with belongs_to and multiple relation branches with deeper nesting" do
+    scope = Avatar.includes(:images, user_profile: :user)
+                  .select(:user_profile_id, images: [:url], user_profile: [:bio, :user_id, user: [:name]])
+
+    assert_nothing_raised { scope.limit(2).to_a }
   end
 end

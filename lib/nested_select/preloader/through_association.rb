@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NestedSelect
   module Preloader
     module ThroughAssociation
@@ -7,7 +9,7 @@ module NestedSelect
           associations: through_reflection.name,
           scope: through_scope,
           associate_by_default: false,
-          ).tap do
+        ).tap do
           _1.apply_nested_select_values(nested_select_values&.grep(Hash))
         end.loaders
       end
@@ -16,8 +18,6 @@ module NestedSelect
         foreign_key = reflection.foreign_key unless reflection.parent_reflection.is_a?(ActiveRecord::Reflection::HasAndBelongsToManyReflection)
         [*foreign_key, *reflection.klass.primary_key].map(&:to_s)
       end
-
     end
   end
 end
-

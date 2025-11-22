@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NestedSelect
   module Preloader
     module Association
@@ -11,13 +13,14 @@ module NestedSelect
         @nested_select_values = [*partial_select_values]
         ensure_nesting_selection_integrity!(association_nested_select_values)
       end
+
       def reflection_relation_keys_attributes
         foreign_key = reflection.foreign_key unless reflection.is_a?(ActiveRecord::Reflection::BelongsToReflection)
         [*foreign_key, *reflection.klass.primary_key].map(&:to_s)
       end
 
       def association_nested_select_values
-        this_association_select_values = nested_select_values&.grep_v(Hash)&.map {_1.try(:to_s) }
+        this_association_select_values = nested_select_values&.grep_v(Hash)&.map { _1.try(:to_s) }
         return if this_association_select_values.blank?
 
         [*this_association_select_values, *reflection_relation_keys_attributes].uniq
@@ -38,7 +41,7 @@ module NestedSelect
         current_selection = nested_select_final_values.grep_v(Hash).map(&:to_s)
 
         basic_attributes_matched = (attributes_loaded & reflection.klass.column_names).tally ==
-                                   (current_selection & reflection.klass.column_names).tally
+          (current_selection & reflection.klass.column_names).tally
 
         # this is not a 100% safe verification, but it will match cases with custom attributes selection for example:
         # "(SELECT COUNT(*) FROM images) as IMG_count" =~ /img_count/
@@ -58,4 +61,3 @@ module NestedSelect
     end
   end
 end
-

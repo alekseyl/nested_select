@@ -1,3 +1,7 @@
+## [0.5.0] - 2025-11-22
+- fixed issue with belongs_to as a root pf the preloading branch and multiple branches
+- partially rubocoped
+
 ## [0.4.4] - 2025-05-09
 - fixed appraisals and local docker compose
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "test_helper"
 
 class TestBelongsToReflections < ActiveSupport::TestCase
@@ -9,7 +10,7 @@ class TestBelongsToReflections < ActiveSupport::TestCase
 
   test "nested select cant run implicit selection of belongs_to without foreign key" do
     avatar_scope = Avatar.includes(user_profile: :user)
-               .select(user_profile: [:bio, { users: [:name] }])
+      .select(user_profile: [:bio, { users: [:name] }])
 
     assert_raises(ActiveModel::MissingAttributeError) do
       avatar_scope.find(identify(:frodo_avatar))
@@ -26,5 +27,4 @@ class TestBelongsToReflections < ActiveSupport::TestCase
     assert_raises(ActiveModel::MissingAttributeError) { user.membership }
     assert_equal(user.reload.membership, "basic")
   end
-
 end

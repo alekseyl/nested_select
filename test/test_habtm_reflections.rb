@@ -1,11 +1,11 @@
 # frozen_string_literal: true
+
 require "test_helper"
 
 class TestHabtmReflections < ActiveSupport::TestCase
   include ActiveRecord::TestFixtures
 
   self.use_instantiated_fixtures = true
-
 
   test "select allows nesting attribute selection" do
     item = Item.includes(users: [user_profile: :avatars])
@@ -56,5 +56,4 @@ class TestHabtmReflections < ActiveSupport::TestCase
     assert_equal(user.avatars, [avatars(:frodo_avatar)])
     assert_not_nil(user.avatars.first.user_profile_id)
   end
-
 end
