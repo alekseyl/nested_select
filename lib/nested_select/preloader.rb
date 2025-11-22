@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NestedSelect
   module Preloader
     extend ActiveSupport::Autoload

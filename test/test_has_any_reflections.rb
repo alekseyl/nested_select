@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "test_helper"
 
 class TestHasAnyReflections < ActiveSupport::TestCase
@@ -27,8 +28,8 @@ class TestHasAnyReflections < ActiveSupport::TestCase
 
   test "select allows nesting attribute selection" do
     item = Item.includes(users: [user_profile: :avatars])
-               .select(users: [:id, :name, user_profile: [:id, :bio, avatars: [:img_url]]])
-               .find(identify(:mug))
+      .select(users: [:id, :name, user_profile: [:id, :bio, avatars: [:img_url]]])
+      .find(identify(:mug))
 
     user = item.users.first
     assert_equal(user.name, "Frodo")
@@ -40,7 +41,7 @@ class TestHasAnyReflections < ActiveSupport::TestCase
 
   test "works fine with inverse_of basic reflection" do
     user = User.includes(user_profile: :avatars)
-               .select(user_profile: [ avatars: [:user_profile_id]])
+               .select(user_profile: [avatars: [:user_profile_id]])
                .find(identify(:frodo))
 
     # NestedSelect::Preloader::Branch#preloaders_for_reflection
@@ -64,5 +65,4 @@ class TestHasAnyReflections < ActiveSupport::TestCase
     assert_equal(user.avatars, [avatars(:frodo_avatar)])
     assert_not_nil(user.avatars.first.user_profile_id)
   end
-
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "test_helper"
 
 class TestThroughReflections < ActiveSupport::TestCase
@@ -32,7 +33,7 @@ class TestThroughReflections < ActiveSupport::TestCase
     assert_nothing_raised { img.owner.img_url }
 
     assert_raises(ActiveModel::MissingAttributeError) { img.owner.user_profile.bio }
-    assert_nothing_raised {  img.owner.user_profile.zip_code }
+    assert_nothing_raised { img.owner.user_profile.zip_code }
   end
 
   test "allows partial selection both way usual and reverse (=through)" do
@@ -61,20 +62,20 @@ class TestThroughReflections < ActiveSupport::TestCase
     assert_nothing_raised { ava.user_profile_id; ava.id }
 
     assert_raises(ActiveModel::MissingAttributeError) { ava.user_profile.bio }
-    assert_nothing_raised { ava.user_profile.user_id; ava.user_profile.id}
+    assert_nothing_raised { ava.user_profile.user_id; ava.user_profile.id }
   end
 
   test "will select all of the main through association if only nested models mentioned" do
     user = User.includes(:through_avatar_images)
-               .select(through_avatar_images: [avatars: [user_profile: [:id]]])
-               .find(identify(:frodo))
+      .select(through_avatar_images: [avatars: [user_profile: [:id]]])
+      .find(identify(:frodo))
 
     assert_equal(user.through_avatar_images.map(&:id), [identify(:avatar_frodo_image)])
     assert_equal(user.through_avatar_images.map(&:thumb), [images(:avatar_frodo_image).thumb])
     assert_nothing_raised { user.through_avatar_images.map(&:created_at) }
   end
-  
-  test 'it works without regression on basic through scope' do
+
+  test "it works without regression on basic through scope" do
     assert_nothing_raised { User.includes(:through_avatar_images).find(identify(:frodo)) }
   end
 end

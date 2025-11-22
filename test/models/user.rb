@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   # Rails style guided+
   #-------------------- 1. includes and extend --------------

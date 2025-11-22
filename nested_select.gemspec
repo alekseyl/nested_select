@@ -23,10 +23,10 @@ Gem::Specification.new do |spec|
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   gemspec = File.basename(__FILE__)
-  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
+  spec.files = IO.popen(["git", "ls-files", "-z"], chdir: __dir__, err: IO::NULL) do |ls|
     ls.readlines("\x0", chomp: true).reject do |f|
       (f == gemspec) ||
-        f.start_with?(*%w[bin/ test/ spec/ features/ .git .github appveyor Gemfile])
+        f.start_with?("bin/", "test/", "spec/", "features/", ".git", ".github", "appveyor", "Gemfile")
     end
   end
   spec.bindir = "exe"
@@ -34,24 +34,24 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency "activerecord", ">= 7"
-  spec.add_dependency "activesupport", ">= 7"
+  spec.add_dependency("activerecord", ">= 7")
+  spec.add_dependency("activesupport", ">= 7")
 
-  spec.add_development_dependency 'minitest'
-  spec.add_development_dependency 'bundler', '>= 1.11'
-  spec.add_development_dependency 'rake', '>= 10.0'
-  spec.add_development_dependency 'rails-i18n', '>=4'
-  spec.add_development_dependency 'sqlite3'
-  spec.add_development_dependency 'byebug'
-  spec.add_development_dependency 'stubberry'
-  spec.add_development_dependency 'rails_sql_prettifier'
-  spec.add_development_dependency 'amazing_print'
-  spec.add_development_dependency 'rubocop-shopify'
-  spec.add_development_dependency "appraisal"
+  spec.add_development_dependency("amazing_print")
+  spec.add_development_dependency("appraisal")
+  spec.add_development_dependency("bundler", ">= 1.11")
+  spec.add_development_dependency("byebug")
+  spec.add_development_dependency("minitest")
+  spec.add_development_dependency("rails-i18n", ">=4")
+  spec.add_development_dependency("rails_sql_prettifier")
+  spec.add_development_dependency("rake", ">= 10.0")
+  spec.add_development_dependency("rubocop-shopify")
+  spec.add_development_dependency("sqlite3")
+  spec.add_development_dependency("stubberry")
   # for ruby 3.4 tests compat
-  spec.add_development_dependency "mutex_m"
-  spec.add_development_dependency "bigdecimal"
-  spec.add_development_dependency "drb"
+  spec.add_development_dependency("bigdecimal")
+  spec.add_development_dependency("drb")
+  spec.add_development_dependency("mutex_m")
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
