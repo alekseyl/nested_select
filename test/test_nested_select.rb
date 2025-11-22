@@ -62,4 +62,19 @@ class TestNestedSelect < ActiveSupport::TestCase
 
     assert_equal(user.user_profile.avs_count, 2)
   end
+
+  # regression test
+  test "will load nested selections with belongs_to and multiple relation branches" do
+    scope = Avatar.includes(:user_profile, :images)
+                .select(:user_profile_id, images: [:url], user_profile: [:bio])
+
+    assert_nothing_raised { scope.limit(2).to_a }
+  end
+
+  test "will load nested selections with belongs_to and multiple relation branches with deeper nesting" do
+    scope = Avatar.includes(:images, user_profile: :user)
+                  .select(:user_profile_id, images: [:url], user_profile: [:bio, :user_id, user: [:name]])
+
+    assert_nothing_raised { scope.limit(2).to_a }
+  end
 end

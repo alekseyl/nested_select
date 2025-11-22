@@ -22,6 +22,6 @@ User has_many user_profiles, UserProfile has_many avatars
 # Reminder
 Rem. I'm always freaking googling everytime I need to run a single test so I'll just keep it here:
 
-```ruby
-bundle exec ruby -Itest test/test_through_reflections.rb
+```bash
+bundle exec ruby -Itest test/test_through_reflections.rb --name '/bb/'
 ```

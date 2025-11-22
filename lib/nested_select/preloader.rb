@@ -13,13 +13,13 @@ module NestedSelect
       ActiveRecord::Associations::Preloader::Association.prepend(Association)
     end
 
-    # first one will start from the roots [included_1: [{}], included_2: [{}] ]
+    # first one will start from the roots [{included_1: [{}], included_2: [{}]}]
     def apply_nested_select_values(nested_select_values)
       distribute_nested_select_over_loading_tree(@tree, nested_select_values)
     end
 
     def distribute_nested_select_over_loading_tree(sub_tree, nested_select_values)
-      #  nested_select_values = [:id, :title, comments: [:id, :body], cover: [:id, img: [:url]]]
+      # Ex: nested_select_values = [:id, :title, comments: [:id, :body], cover: [:id, img: [:url]]]
       return if nested_select_values.blank?
 
       sub_tree.nested_select_values = [*nested_select_values.grep_v(Hash)]

@@ -6,7 +6,7 @@ class TestThroughReflections < ActiveSupport::TestCase
 
   self.use_instantiated_fixtures = true
 
-  test "will raise attribute error if nesting selection branches differ bb" do
+  test "will raise attribute error if nesting selection branches differ" do
     scope = User.includes(:through_avatar_images, :avatars)
                 .select(avatars: [:img_url, { user_profile: [:zip_code] }],
                         through_avatar_images: [avatars: [:created_at, { user_profile: [:bio] }]])
